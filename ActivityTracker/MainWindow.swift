@@ -11,16 +11,27 @@ import AppKit
 
 class MainWindow : NSViewController {
     
-    
-    
     let EVENTS_TO_MONITOR:NSEvent.EventTypeMask = [.keyDown,.mouseMoved,.scrollWheel,.leftMouseDown,.rightMouseDown,.otherMouseDown,.leftMouseDragged,.rightMouseDragged]
     let ALLOWED_INACTIVITY_LABEL_TEXT = "How long to wait before showing reminder? (Seconds)"
     
+    var currentSession:Session! = nil
     var lastActivity:Date = Date()
     var beginningActivity:Date = Date()
     
     var screenIsLocked = false
     var paused = false
+    var activityTypeLastChanged = Date()
+    var currentActivityType:ActivityType = .active {
+        didSet{
+            if (currentActivityType != oldValue){
+                if (oldValue == .scolded){
+                    hideScoldingText()
+                }
+                currentSession.activityPhases.append(ActivityPhase(startTime: activityTypeLastChanged, endTime: Date(), activityType: currentActivityType))
+                activityTypeLastChanged = Date()
+            }
+        }
+    }
     
     //event variables
     var inputOccurred = false
@@ -28,8 +39,13 @@ class MainWindow : NSViewController {
     @IBOutlet weak var PauseBtn: NSButton!
     @IBOutlet weak var allowedInactivityTxtField: NSTextField!
     @IBOutlet weak var allowedInactivityLabel: NSTextField!
+    @IBOutlet weak var scoldingText: NSTextField!
+    @IBOutlet weak var scoldingTextHeight: NSLayoutConstraint!
+    var scoldingTextInitialHeight:CGFloat = 0
     
     override func viewDidLoad() {
+        
+        currentSession = Session(date:Date(),activityPhases:[])
         
         //setting up update timer
         _ = Timer.scheduledTimer(timeInterval: 0.016, target: self, selector: #selector(timerWentOff), userInfo: nil, repeats: true)
@@ -38,6 +54,9 @@ class MainWindow : NSViewController {
     }
     
     override func viewWillAppear() {
+        scoldingTextInitialHeight = scoldingText.bounds.size.height
+        scoldingTextHeight.constant = 0
+        
         allowedInactivityTxtField.stringValue = "\(UserPreferences.GetAllowedInactivity())"
         allowedInactivityLabel.stringValue = ALLOWED_INACTIVITY_LABEL_TEXT
     }
@@ -49,18 +68,19 @@ class MainWindow : NSViewController {
             var lastActivityShouldUpdate = false
             
             if inputOccurred{
+                currentActivityType = .active
                 lastActivityShouldUpdate = true
             }
             
             //showing reminder popup if you've been inactive too long
-            if (Date().timeIntervalSince(lastActivity) > TimeInterval(UserPreferences.GetAllowedInactivity())){
-                NSApplication.shared.activate(ignoringOtherApps: true)
-                let reminder = NSAlert()
-                reminder.alertStyle = .informational
-                reminder.messageText = "Back To Work!"
-                reminder.addButton(withTitle: "Dismiss")
-                reminder.runModal()
-                self.lastActivity = Date()
+            if (Date().timeIntervalSince(lastActivity) > TimeInterval(UserPreferences.GetAllowedInactivity())
+                && currentActivityType != .scolded){
+                    scoldUser()
+            }
+            
+            if (currentActivityType == .active
+                && Date().timeIntervalSince(lastActivity) > TimeInterval(UserPreferences.GetAllowedActivityDistance())){
+                currentActivityType = .inactive
             }
             
             inputOccurred = false
@@ -71,6 +91,33 @@ class MainWindow : NSViewController {
             
         }
         
+    }
+    func showScoldingText(){
+        NSAnimationContext.runAnimationGroup{context in
+            context.duration = 0.25
+            scoldingText.animator().alphaValue = 1
+            scoldingTextHeight.animator().constant = scoldingTextInitialHeight
+            self.view.layoutSubtreeIfNeeded()
+        }
+    }
+    
+    func hideScoldingText(){
+        NSAnimationContext.runAnimationGroup{context in
+            context.duration = 0.25
+            scoldingText.animator().alphaValue = 0
+            scoldingTextHeight.animator().constant = 0
+            self.view.layoutSubtreeIfNeeded()
+        }
+    }
+    
+    func scoldUser(){
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        showScoldingText()
+        currentActivityType = .scolded
+    }
+    
+    func currentlyInactive() -> Bool{
+        return Date().timeIntervalSince(lastActivity) > TimeInterval(UserPreferences.GetAllowedInactivity())
     }
     
     func SetupEventMonitoring(){
@@ -94,10 +141,12 @@ class MainWindow : NSViewController {
     
     @objc func ScreenLocked(){
         screenIsLocked = true
+        currentActivityType = .screenLocked
     }
     
     @objc func ScreenUnlocked(){
         screenIsLocked = false
+        currentActivityType = .active
         lastActivity = Date()
     }
     
@@ -133,8 +182,10 @@ class MainWindow : NSViewController {
     @IBAction func PauseBtnPressed(_ sender: Any) {
         paused = !paused
         if (paused){
+            currentActivityType = .paused
             PauseBtn.title = "Unpause"
         }else{
+            currentActivityType = .active
             PauseBtn.title = "Pause"
             lastActivity = Date()
         }
