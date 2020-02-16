@@ -8,7 +8,13 @@
 
 import Foundation
 
-class ActivityPhase{
+class ActivityPhase : CustomStringConvertible{
+    
+    var description: String {
+        get {
+            return "start: \(startTime) end: \(endTime) type: \(activityType) allowedDist: \(allowedActivityDistance)"
+        }
+    }
     
     let startTime : Date
     let endTime : Date
@@ -16,6 +22,8 @@ class ActivityPhase{
     //the amount of time allowed between inputs for them to still be considered
     //part of the same phase of activity
     let allowedActivityDistance : Int
+    
+    
     
     init(startTime: Date, endTime: Date, activityType: ActivityType){
         self.startTime = startTime
