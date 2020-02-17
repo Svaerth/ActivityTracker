@@ -8,8 +8,9 @@
 
 import Foundation
 
-class ActivityPhase : CustomStringConvertible{
+struct ActivityPhase : Codable, CustomStringConvertible{
     
+    //overrides how this object will be converted to a string
     var description: String {
         get {
             return "start: \(startTime) end: \(endTime) type: \(activityType) allowedDist: \(allowedActivityDistance)"
@@ -22,8 +23,6 @@ class ActivityPhase : CustomStringConvertible{
     //the amount of time allowed between inputs for them to still be considered
     //part of the same phase of activity
     let allowedActivityDistance : Int
-    
-    
     
     init(startTime: Date, endTime: Date, activityType: ActivityType){
         self.startTime = startTime

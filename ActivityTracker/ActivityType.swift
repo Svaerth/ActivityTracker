@@ -8,10 +8,10 @@
 
 import Foundation
 
-enum ActivityType{
-    case active
-    case inactive
-    case paused
-    case screenLocked
-    case scolded
+enum ActivityType : String , Codable{
+    case active = "active"
+    case inactive = "inactive"
+    case paused = "paused"
+    case screenLocked = "screenLocked"
+    case scolded = "scolded"
 }

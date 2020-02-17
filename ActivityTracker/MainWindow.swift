@@ -30,9 +30,7 @@ class MainWindow : NSViewController {
                 if (oldValue == .scolded){
                     hideScoldingText()
                 }
-                let ap = ActivityPhase(startTime: activityTypeLastChanged, endTime: Date(), activityType: oldValue)
-                print("\(ap)")
-                currentSession?.activityPhases.append(ap)
+                recordPreviousActivityPhase(type:oldValue)
                 activityTypeLastChanged = Date()
             }
         }
@@ -44,12 +42,11 @@ class MainWindow : NSViewController {
     @IBOutlet weak var allowedInactivityLabel: NSTextField!
     @IBOutlet weak var scoldingText: NSTextField!
     @IBOutlet weak var scoldingTextHeight: NSLayoutConstraint!
+    @IBOutlet weak var SessionBtn: NSButton!
     
     // MARK: event methods
     
     override func viewDidLoad() {
-        
-        currentSession = Session(date:Date(),activityPhases:[])
         
         //setting up update timer
         _ = Timer.scheduledTimer(timeInterval: 0.016, target: self, selector: #selector(updateTimerWentOff), userInfo: nil, repeats: true)
@@ -113,6 +110,21 @@ class MainWindow : NSViewController {
         updateAllowedInactivity()
     }
     
+    @IBAction func SessionBtnPressed(_ sender: Any) {
+        //ending the session
+        if currentSession != nil{
+            SessionBtn.title = "Start Session"
+            recordPreviousActivityPhase(type:currentActivityType)
+            currentSession?.saveToDisk()
+            currentSession = nil
+        }
+        //starting the session
+        else{
+            currentSession = Session()
+            SessionBtn.title = "End Session"
+        }
+    }
+    
     @IBAction func SaveBtnPressed(_ sender: Any) {
         updateAllowedInactivity()
     }
@@ -130,6 +142,13 @@ class MainWindow : NSViewController {
     }
     
     // MARK: helper methods
+    
+    func recordPreviousActivityPhase(type: ActivityType){
+        if let _currentSession = currentSession{
+            let startTime = activityTypeLastChanged < _currentSession.date ? _currentSession.date : activityTypeLastChanged
+            currentSession!.activityPhases.append(ActivityPhase(startTime: startTime, endTime: Date(), activityType: type))
+        }
+    }
     
     func updateAllowedInactivity(){
         if let newReminderWaitTime = Int(allowedInactivityTxtField.stringValue){

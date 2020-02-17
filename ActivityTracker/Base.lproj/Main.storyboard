@@ -709,6 +709,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="406"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WVT-Tj-fqs">
+                                <rect key="frame" x="169" y="88" width="112" height="61"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="PAo-8H-BVC"/>
+                                    <constraint firstAttribute="height" constant="50" id="f7E-RY-WiB"/>
+                                </constraints>
+                                <buttonCell key="cell" type="push" title="Pause" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ez5-Bi-xno">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="PauseBtnPressed:" target="pz2-Cw-rFd" id="UAI-pG-Hjz"/>
+                                </connections>
+                            </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qnr-sa-HRP">
                                 <rect key="frame" x="59" y="308" width="332" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="How long to wait before showing reminder? (Seconds)" id="98K-vj-kaI">
@@ -757,22 +771,23 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WVT-Tj-fqs">
-                                <rect key="frame" x="169" y="88" width="112" height="61"/>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="052-Lz-IPS">
+                                <rect key="frame" x="165" y="47" width="121" height="32"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="PAo-8H-BVC"/>
-                                    <constraint firstAttribute="height" constant="50" id="f7E-RY-WiB"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="I6h-tp-agh"/>
                                 </constraints>
-                                <buttonCell key="cell" type="push" title="Pause" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ez5-Bi-xno">
+                                <buttonCell key="cell" type="push" title="Start Session" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Mq1-EW-YjF">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="PauseBtnPressed:" target="pz2-Cw-rFd" id="UAI-pG-Hjz"/>
+                                    <action selector="SessionBtnPressed:" target="pz2-Cw-rFd" id="5Z6-3F-0Nz"/>
                                 </connections>
                             </button>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="052-Lz-IPS" firstAttribute="centerX" secondItem="0nC-Xa-H6A" secondAttribute="centerX" id="ID7-la-Y8D"/>
+                            <constraint firstItem="052-Lz-IPS" firstAttribute="top" secondItem="WVT-Tj-fqs" secondAttribute="bottom" constant="20" id="NGr-vs-S3T"/>
                             <constraint firstItem="qnr-sa-HRP" firstAttribute="top" secondItem="maC-m6-UY1" secondAttribute="bottom" constant="1" id="Rgf-ou-rjO"/>
                             <constraint firstItem="WVT-Tj-fqs" firstAttribute="top" secondItem="fnc-gX-JEk" secondAttribute="bottom" constant="60" id="RwH-cH-cIo"/>
                             <constraint firstItem="maC-m6-UY1" firstAttribute="centerX" secondItem="0nC-Xa-H6A" secondAttribute="centerX" id="WhB-9a-Rcy"/>
@@ -787,6 +802,7 @@
                     </view>
                     <connections>
                         <outlet property="PauseBtn" destination="WVT-Tj-fqs" id="Zgk-i9-XvI"/>
+                        <outlet property="SessionBtn" destination="052-Lz-IPS" id="c9e-gg-ELJ"/>
                         <outlet property="allowedInactivityLabel" destination="qnr-sa-HRP" id="nSl-IL-cwI"/>
                         <outlet property="allowedInactivityTxtField" destination="oEL-ii-FGL" id="Xwg-1u-XAt"/>
                         <outlet property="scoldingText" destination="maC-m6-UY1" id="sxg-Ft-j0B"/>
