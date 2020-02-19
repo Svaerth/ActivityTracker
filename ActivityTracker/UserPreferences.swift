@@ -14,10 +14,11 @@ class UserPreferences{
         
         //UserDefaults.standard.removeObject(forKey: allowedInactivityKey)
         
-        let prefsDict = [
+        let prefsDict:[String : Any] = [
             allowedInactivityKey : NSNumber(value: allowedInactivityDefault),
-            allowedActivityDistanceKey : NSNumber(value: allowedActivityDistanceDefault)
-        ]
+            allowedActivityDistanceKey : NSNumber(value: allowedActivityDistanceDefault),
+            sessionStorageDirectoryKey : sessionStorageDirectoryDefault
+            ]
         
         UserDefaults.standard.register(defaults: prefsDict)
         

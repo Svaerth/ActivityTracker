@@ -18,6 +18,7 @@
 		44EB19E223F507AF00615D92 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EB19E123F507AF00615D92 /* Session.swift */; };
 		44EB19E423F509F400615D92 /* ActivityPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EB19E323F509F400615D92 /* ActivityPhase.swift */; };
 		44EB19E823F6690C00615D92 /* ActivityType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EB19E723F6690C00615D92 /* ActivityType.swift */; };
+		44EB19EA23FB985200615D92 /* PreferenceControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EB19E923FB985200615D92 /* PreferenceControl.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		44EB19E123F507AF00615D92 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		44EB19E323F509F400615D92 /* ActivityPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPhase.swift; sourceTree = "<group>"; };
 		44EB19E723F6690C00615D92 /* ActivityType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityType.swift; sourceTree = "<group>"; };
+		44EB19E923FB985200615D92 /* PreferenceControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceControl.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +119,7 @@
 				44EB19E123F507AF00615D92 /* Session.swift */,
 				44EB19E323F509F400615D92 /* ActivityPhase.swift */,
 				44EB19E723F6690C00615D92 /* ActivityType.swift */,
+				44EB19E923FB985200615D92 /* PreferenceControl.swift */,
 			);
 			path = ActivityTracker;
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 				44EB19E223F507AF00615D92 /* Session.swift in Sources */,
 				44EB19A623F3859100615D92 /* MainWindow.swift in Sources */,
 				44EB19E023F3B47F00615D92 /* UserPreferences.swift in Sources */,
+				44EB19EA23FB985200615D92 /* PreferenceControl.swift in Sources */,
 				44EB19E823F6690C00615D92 /* ActivityType.swift in Sources */,
 				44EB197723EFCF0000615D92 /* AppDelegate.swift in Sources */,
 			);

@@ -23,19 +23,15 @@ struct ActivityPhase : Codable, CustomStringConvertible{
     //the amount of time allowed between inputs for them to still be considered
     //part of the same phase of activity
     let allowedActivityDistance : Int
+    //the amount of inactivity you can have before getting scolded
+    let allowedInactivity : Int
     
     init(startTime: Date, endTime: Date, activityType: ActivityType){
         self.startTime = startTime
         self.endTime = endTime
         self.activityType = activityType
-        self.allowedActivityDistance = UserPreferences.GetAllowedActivityDistance()
-    }
-    
-    init(startTime: Date, endTime: Date, activityType: ActivityType, allowedActivityDistance:Int){
-        self.startTime = startTime
-        self.endTime = endTime
-        self.activityType = activityType
-        self.allowedActivityDistance = allowedActivityDistance
+        allowedActivityDistance = UserPreferences.GetAllowedActivityDistance()
+        allowedInactivity = UserPreferences.GetAllowedInactivity()
     }
     
 }

@@ -13,7 +13,6 @@ class MainWindow : NSViewController {
     
     // MARK: constants
     let EVENTS_TO_MONITOR:NSEvent.EventTypeMask = [.keyDown,.mouseMoved,.scrollWheel,.leftMouseDown,.rightMouseDown,.otherMouseDown,.leftMouseDragged,.rightMouseDragged]
-    let ALLOWED_INACTIVITY_LABEL_TEXT = "How long to wait before showing reminder? (Seconds)"
     
     // MARK: other variables
     var scoldingTextInitialHeight:CGFloat = 0
@@ -38,15 +37,18 @@ class MainWindow : NSViewController {
     
     //MARK: iboutlets
     @IBOutlet weak var PauseBtn: NSButton!
-    @IBOutlet weak var allowedInactivityTxtField: NSTextField!
-    @IBOutlet weak var allowedInactivityLabel: NSTextField!
     @IBOutlet weak var scoldingText: NSTextField!
     @IBOutlet weak var scoldingTextHeight: NSLayoutConstraint!
     @IBOutlet weak var SessionBtn: NSButton!
+    @IBOutlet weak var ActivityDistanceControl: PreferenceControl!
+    @IBOutlet weak var AllowedInactivityControl: PreferenceControl!
+    @IBOutlet weak var currentDirectoryLabel: NSTextField!
     
     // MARK: event methods
     
     override func viewDidLoad() {
+        
+        UserPreferences.RegisterDefaultPreferences()
         
         //setting up update timer
         _ = Timer.scheduledTimer(timeInterval: 0.016, target: self, selector: #selector(updateTimerWentOff), userInfo: nil, repeats: true)
@@ -55,11 +57,24 @@ class MainWindow : NSViewController {
     }
     
     override func viewWillAppear() {
+        
         scoldingTextInitialHeight = scoldingText.bounds.size.height
         scoldingTextHeight.constant = 0
         
-        allowedInactivityTxtField.stringValue = "\(UserPreferences.GetAllowedInactivity())"
-        allowedInactivityLabel.stringValue = ALLOWED_INACTIVITY_LABEL_TEXT
+        ActivityDistanceControl.setup(description: "Allowed Activity Dist.", getTextFieldValue: { () -> Int in
+            return UserPreferences.GetAllowedActivityDistance()
+        }) { (newValue) in
+            UserPreferences.SetAllowedActivityDistance(newValue)
+        }
+        
+        AllowedInactivityControl.setup(description: "Allowed Inactivity", getTextFieldValue: { () -> Int in
+            return UserPreferences.GetAllowedInactivity()
+        }) { (newValue) in
+            UserPreferences.SetAllowedInactivity(newValue)
+        }
+        
+        currentDirectoryLabel.stringValue = UserPreferences.GetSessionStorageDirectory()
+        
     }
     
     @objc func ScreenLocked(){
@@ -106,10 +121,6 @@ class MainWindow : NSViewController {
         
     }
     
-    @IBAction func AllowedInactivityTxtFieldChanged(_ sender: Any) {
-        updateAllowedInactivity()
-    }
-    
     @IBAction func SessionBtnPressed(_ sender: Any) {
         //ending the session
         if currentSession != nil{
@@ -125,10 +136,6 @@ class MainWindow : NSViewController {
         }
     }
     
-    @IBAction func SaveBtnPressed(_ sender: Any) {
-        updateAllowedInactivity()
-    }
-    
     @IBAction func PauseBtnPressed(_ sender: Any) {
         paused = !paused
         if (paused){
@@ -141,6 +148,31 @@ class MainWindow : NSViewController {
         }
     }
     
+    @IBAction func ChangeDirBtnPressed(_ sender: Any) {
+        
+        let dialog = NSOpenPanel();
+        dialog.title = "Choose a .txt file";
+        dialog.showsResizeIndicator = true;
+        dialog.showsHiddenFiles = false;
+        dialog.canChooseFiles = false
+        dialog.canChooseDirectories = true;
+        dialog.canCreateDirectories = true;
+        dialog.allowsMultipleSelection = false;
+        dialog.directoryURL = URL(fileURLWithPath: UserPreferences.GetSessionStorageDirectory())
+
+        if (dialog.runModal() == NSApplication.ModalResponse.OK) {
+            let result = dialog.url
+            if (result != nil) {
+                let path = result!.path
+                currentDirectoryLabel.stringValue = path
+                UserPreferences.SetSessionStorageDirectory(path)
+            }
+        } else {
+            // User clicked on "Cancel"
+            return
+        }
+    }
+    
     // MARK: helper methods
     
     func recordPreviousActivityPhase(type: ActivityType){
@@ -148,21 +180,6 @@ class MainWindow : NSViewController {
             let startTime = activityTypeLastChanged < _currentSession.date ? _currentSession.date : activityTypeLastChanged
             currentSession!.activityPhases.append(ActivityPhase(startTime: startTime, endTime: Date(), activityType: type))
         }
-    }
-    
-    func updateAllowedInactivity(){
-        if let newReminderWaitTime = Int(allowedInactivityTxtField.stringValue){
-            UserPreferences.SetAllowedInactivity(newReminderWaitTime)
-            allowedInactivityLabel.stringValue = "Saved!"
-        }else{
-            allowedInactivityLabel.stringValue = "Invalid Time Entered!"
-            allowedInactivityTxtField.stringValue = "\(UserPreferences.GetAllowedInactivity())"
-        }
-        _ = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(revertAllowedInactivityLabel), userInfo: nil, repeats: false)
-    }
-    
-    @objc func revertAllowedInactivityLabel(){
-        allowedInactivityLabel.stringValue = ALLOWED_INACTIVITY_LABEL_TEXT
     }
     
     func showScoldingText(){
